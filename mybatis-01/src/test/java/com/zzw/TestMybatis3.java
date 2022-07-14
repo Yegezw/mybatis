@@ -3,6 +3,9 @@ package com.zzw;
 import com.zzw.cache1.ProductMapper;
 import com.zzw.cache1.ProductMapperImpl;
 import com.zzw.cache1.ProxyCache;
+import org.apache.ibatis.cache.decorators.LoggingCache;
+import org.apache.ibatis.cache.decorators.LruCache;
+import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -44,6 +47,18 @@ public class TestMybatis3 {
         System.out.println("-----------");
         productMapper.queryProductById(2); // 缓存未命中
         System.out.println("-----------");
+    }
+
+    /**
+     * 测试 Cache 和装饰器
+     */
+    @Test
+    public void test() {
+        PerpetualCache perpetualCache = new PerpetualCache("zzw"); // 核心 Cache
+
+        LruCache lruCache = new LruCache(perpetualCache); // 增强换出
+
+        LoggingCache loggingCache = new LoggingCache(lruCache); // 增强日志
     }
 
 }
