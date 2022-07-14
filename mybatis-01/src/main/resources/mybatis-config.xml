@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!--属性配置-->
+    <properties resource="jdbc.properties"/>
+
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+    <!--配置别名-->
+    <typeAliases>
+        <typeAlias type="com.zzw.pojo.User" alias="User"/>
+        <typeAlias type="com.zzw.pojo.Account" alias="Account"/>
+    </typeAliases>
+
+    <!--环境配置-->
+    <environments default="default">
+        <environment id="default">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <!--加载 mapper 映射文件-->
+    <mappers>
+        <mapper resource="mapper/AccountMapper.xml"/>
+        <mapper resource="mapper/UserMapper.xml"/>
+    </mappers>
+
+</configuration>

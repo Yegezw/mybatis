@@ -1,0 +1,10 @@
+<users>
+    <user>
+        <name>张三</name>
+        <password>123</password>
+    </user>
+    <user>
+        <name>李四</name>
+        <password>321</password>
+    </user>
+</users>
