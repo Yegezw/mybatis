@@ -29,8 +29,11 @@ public class TestMybatis2 {
         InputStream config = Resources.getResourceAsStream("mybatis-config.xml");
 
         // 根据 config 用 XPathParser 解析成 Configuration
+        // 在这个过程中, 会根据配置文件中 mapper 标签的内容, 把 XXXMapper.xml 解析成 MappedStatemrnt 对象
+        // 最后 return new DefaultSqlSessionFactory(configuration)
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(config);
 
+        // return new DefaultSqlSession(configuration, executor, autoCommit)
         sqlSession = factory.openSession();
     }
 
@@ -64,6 +67,5 @@ public class TestMybatis2 {
 
         System.out.println(users);
     }
-
 
 }
