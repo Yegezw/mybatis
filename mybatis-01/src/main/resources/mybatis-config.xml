@@ -5,9 +5,9 @@
     <!--属性配置-->
     <properties resource="jdbc.properties"/>
 
-    <settings>
+    <!--<settings>
         <setting name="cacheEnabled" value="true"/>
-    </settings>
+    </settings>-->
 
     <!--配置别名-->
     <typeAliases>

@@ -3,6 +3,8 @@ package com.zzw;
 import com.zzw.cache1.ProductMapper;
 import com.zzw.cache1.ProductMapperImpl;
 import com.zzw.cache1.ProxyCache;
+import com.zzw.mapper.UserMapper;
+import com.zzw.pojo.User;
 import org.apache.ibatis.cache.decorators.LoggingCache;
 import org.apache.ibatis.cache.decorators.LruCache;
 import org.apache.ibatis.cache.impl.PerpetualCache;
@@ -15,16 +17,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.util.List;
 
 @SuppressWarnings("all")
 public class TestMybatis3 {
 
+    private SqlSessionFactory factory;
     private SqlSession sqlSession;
 
     @Before
     public void init() throws Exception {
         InputStream config = Resources.getResourceAsStream("mybatis-config.xml");
-        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(config);
+        factory = new SqlSessionFactoryBuilder().build(config);
         sqlSession = factory.openSession();
     }
 
@@ -59,6 +63,46 @@ public class TestMybatis3 {
         LruCache lruCache = new LruCache(perpetualCache); // 增强换出
 
         LoggingCache loggingCache = new LoggingCache(lruCache); // 增强日志
+    }
+
+    /**
+     * 测试一级缓存
+     */
+    @Test
+    public void testLevel1Cache1() {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+
+        List<User> users1 = userMapper.queryAllUsers(); // 第一次查询
+        users1.forEach(System.out::println);
+
+        System.out.println("-------------------------");
+
+        List<User> users2 = userMapper.queryAllUsers(); // 第二次查询
+        users2.forEach(System.out::println);
+    }
+
+
+    /**
+     * 测试一级缓存只对同一个 SqlSession 有效
+     */
+    @Test
+    public void testLevel1Cache2() {
+        SqlSession sqlSession1 = factory.openSession();
+        SqlSession sqlSession2 = factory.openSession();
+
+        UserMapper userMapper1 = sqlSession1.getMapper(UserMapper.class);
+        UserMapper userMapper2 = sqlSession2.getMapper(UserMapper.class);
+
+        List<User> users1 = userMapper1.queryAllUsers(); // 第一次 sqlSession1 查询
+        users1.forEach(System.out::println);
+
+        System.out.println("-------------------------");
+
+        List<User> users2 = userMapper2.queryAllUsers(); // 第二次 sqlSession2 查询
+        users2.forEach(System.out::println);
+
+        sqlSession1.close();
+        sqlSession2.close();
     }
 
 }
