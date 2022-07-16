@@ -81,7 +81,6 @@ public class TestMybatis3 {
         users2.forEach(System.out::println);
     }
 
-
     /**
      * 测试一级缓存只对同一个 SqlSession 有效
      */
@@ -100,6 +99,31 @@ public class TestMybatis3 {
 
         List<User> users2 = userMapper2.queryAllUsers(); // 第二次 sqlSession2 查询
         users2.forEach(System.out::println);
+
+        sqlSession1.close();
+        sqlSession2.close();
+    }
+
+    /**
+     * 测试二级缓存
+     */
+    @Test
+    public void testLevel2Cache() {
+        SqlSession sqlSession1 = factory.openSession();
+        SqlSession sqlSession2 = factory.openSession();
+
+        UserMapper userMapper1 = sqlSession1.getMapper(UserMapper.class);
+        UserMapper userMapper2 = sqlSession2.getMapper(UserMapper.class);
+
+        List<User> users1 = userMapper1.queryAllUsers(); // 第一次 sqlSession1 查询
+        users1.forEach(System.out::println);
+        sqlSession1.commit();                            // 提交 sqlSession1
+
+        System.out.println("-------------------------");
+
+        List<User> users2 = userMapper2.queryAllUsers(); // 第二次 sqlSession2 查询
+        users2.forEach(System.out::println);
+        sqlSession2.commit();                            // 提交 sqlSession2
 
         sqlSession1.close();
         sqlSession2.close();
