@@ -129,4 +129,39 @@ public class TestMybatis3 {
         sqlSession2.close();
     }
 
+    /**
+     * 测试二级缓存清空
+     */
+    @Test
+    public void testLevel2Cache2() {
+        SqlSession sqlSession1 = factory.openSession();
+        SqlSession sqlSession2 = factory.openSession();
+        SqlSession sqlSession3 = factory.openSession();
+
+        UserMapper userMapper1 = sqlSession1.getMapper(UserMapper.class);
+        UserMapper userMapper2 = sqlSession2.getMapper(UserMapper.class);
+        UserMapper userMapper3 = sqlSession3.getMapper(UserMapper.class);
+
+        List<User> users1 = userMapper1.queryAllUsers(); // 第一次 sqlSession1 查询 ---> ms1 ---> cache
+        User user1 = userMapper1.queryUserById(4);       // 第一次 sqlSession1 查询 ---> ms2 ---> cache
+        sqlSession1.commit();                            // 提交 sqlSession1, 会往二级缓存中添加数据
+
+        System.out.println("-------------------------");
+
+        List<User> users2 = userMapper2.queryAllUsers(); // 第二次 sqlSession2 查询 ---> ms1 ---> 查询 cache
+        User user2 = userMapper1.queryUserById(4);       // 第一次 sqlSession2 查询 ---> ms2 ---> 查询 cache
+        sqlSession2.commit();                            // 提交 sqlSession2
+
+        System.out.println("-------------------------");
+
+        User user = new User(1, "zzw1");
+        Integer rows = userMapper3.updateUserById(user); // sqlSession3 更新 ---> ms3 ---> 清空 cache
+        System.out.println(rows);
+        sqlSession3.commit();                            // 提交 sqlSession3
+
+        sqlSession1.close();
+        sqlSession2.close();
+        sqlSession3.close();
+    }
+
 }
